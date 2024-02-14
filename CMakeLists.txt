@@ -46,5 +46,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         C_STANDARD 99
         )
 
-target_link_libraries(litebrowser litehtml be localestub translation bnetapi) # ${LB_LIBS_LIBRARIES}
+target_include_directories(litebrowser PRIVATE /system/develop/headers/private/netservices/)
+target_link_libraries(litebrowser litehtml be localestub translation bnetapi netservices shared) # ${LB_LIBS_LIBRARIES}
 

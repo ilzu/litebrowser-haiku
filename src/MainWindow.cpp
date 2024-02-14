@@ -107,12 +107,13 @@ MainWindow::Load(const char* filePathOrUrl)
 		} else {
 			std::cout << "  Loading protocol: " << protocol << std::endl;
 			// Go fetch it...
-			BUrlContext* context = new BUrlContext();
-			BUrlProtocolDispatchingListener* listener = 
-				new BUrlProtocolDispatchingListener(this);
+			BPrivate::Network::BUrlContext* context = new BPrivate::Network::BUrlContext();
+			BPrivate::Network::BUrlProtocolDispatchingListener* listener = 
+				new BPrivate::Network::BUrlProtocolDispatchingListener(this);
 			fDataReceived = "";
-			BUrlRequest* req = BUrlProtocolRoster::MakeRequest(
-				url,listener,context);
+			BDataIO* urlData = new BMallocIO();
+			BPrivate::Network::BUrlRequest* req = BPrivate::Network::BUrlProtocolRoster::MakeRequest(
+				url, urlData, listener/*, url,listener,context */);
 			if (NULL != req)
 			{
 				std::cout << "  Request created. Dispatching." << std::endl;
@@ -136,7 +137,7 @@ MainWindow::MessageReceived(BMessage *msg)
 	BString str;
 	switch (msg->what)
 	{
-		case B_URL_PROTOCOL_NOTIFICATION:
+		case BPrivate::Network::B_URL_PROTOCOL_NOTIFICATION:
 		{
 			//std::cout << "  UrlRequest update received" << std::endl;
 			// data loading, request finished, or download progress
@@ -146,7 +147,7 @@ MainWindow::MessageReceived(BMessage *msg)
 				{
 					// TODO don't assume it's just a web page data
 					//      - could be image, css, etc.
-					case B_URL_PROTOCOL_DATA_RECEIVED:
+					case BPrivate::Network::B_URL_PROTOCOL_HEADERS_RECEIVED:
 					{
 						//std::cout << "  Data received" << std::endl;
 						if (B_OK == msg->FindString("url:data",&str))
@@ -155,7 +156,7 @@ MainWindow::MessageReceived(BMessage *msg)
 						}
 						break;
 					}
-					case B_URL_PROTOCOL_REQUEST_COMPLETED:
+					case BPrivate::Network::B_URL_PROTOCOL_REQUEST_COMPLETED:
 					{
 						std::cout << "  BUrlRequest complete" << std::endl;
 						// TODO check success flag
